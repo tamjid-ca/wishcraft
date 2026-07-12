@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 
 Future<Uint8List> captureCardAsPng(GlobalKey repaintKey, {double pixelRatio = 3.0}) async {
   await Future.delayed(const Duration(milliseconds: 150));

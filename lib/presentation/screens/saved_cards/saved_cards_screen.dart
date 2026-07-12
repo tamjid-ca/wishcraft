@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../providers/providers.dart';
+import '../../viewmodels/saved_cards_viewmodel.dart';
 import '../../widgets/cards/saved_card_thumbnail.dart';
 
 class SavedCardsScreen extends ConsumerWidget {

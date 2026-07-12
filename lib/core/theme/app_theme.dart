@@ -30,10 +30,10 @@ class AppTheme {
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
       ),
       textTheme: _buildTextTheme(Brightness.light),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.cardBg,
         elevation: 4,
-        shadowColor: AppColors.primary.withOpacity(0.15),
+        shadowColor: AppColors.primary.withValues(alpha: 0.15),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -59,11 +59,11 @@ class AppTheme {
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.primary.withOpacity(0.3)),
+          borderSide: BorderSide(color: AppColors.primary.withValues(alpha: 0.3)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.primary.withOpacity(0.2)),
+          borderSide: BorderSide(color: AppColors.primary.withValues(alpha: 0.2)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -74,7 +74,7 @@ class AppTheme {
       ),
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.surface,
-        selectedColor: AppColors.primary.withOpacity(0.15),
+        selectedColor: AppColors.primary.withValues(alpha: 0.15),
         labelStyle: GoogleFonts.poppins(fontSize: 13),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(100),
@@ -109,7 +109,7 @@ class AppTheme {
         iconTheme: const IconThemeData(color: AppColors.textOnDark),
       ),
       textTheme: _buildTextTheme(Brightness.dark),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.cardBgDark,
         elevation: 4,
         shadowColor: Colors.black26,
@@ -138,18 +138,18 @@ class AppTheme {
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.primaryLight.withOpacity(0.3)),
+          borderSide: BorderSide(color: AppColors.primaryLight.withValues(alpha: 0.3)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.primaryLight.withOpacity(0.2)),
+          borderSide: BorderSide(color: AppColors.primaryLight.withValues(alpha: 0.2)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppColors.primaryLight, width: 2),
         ),
-        labelStyle: GoogleFonts.poppins(color: AppColors.textOnDark.withOpacity(0.8)),
-        hintStyle: GoogleFonts.poppins(color: AppColors.textOnDark.withOpacity(0.4)),
+        labelStyle: GoogleFonts.poppins(color: AppColors.textOnDark.withValues(alpha: 0.8)),
+        hintStyle: GoogleFonts.poppins(color: AppColors.textOnDark.withValues(alpha: 0.4)),
       ),
     );
   }

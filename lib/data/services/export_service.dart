@@ -1,11 +1,12 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:gallery_saver/gallery_saver.dart';
+import 'package:saver_gallery/saver_gallery.dart';
 import '../../core/errors/app_exception.dart';
 
 class ExportService {
@@ -50,7 +51,13 @@ class ExportService {
   Future<bool> saveToGallery(File file) async {
     final path = file.path;
     if (path.endsWith('.png') || path.endsWith('.jpg')) {
-      return await GallerySaver.saveImage(path, albumName: 'WishCraft') ?? false;
+      final result = await SaverGallery.saveFile(
+        file: path,
+        name: 'wishcraft_${DateTime.now().millisecondsSinceEpoch}.png',
+        androidRelativePath: 'Pictures/WishCraft',
+        androidExistNotSave: false,
+      );
+      return result.isSuccess;
     } else if (path.endsWith('.pdf')) {
       final downloadsDir = await getDownloadsDirectory();
       if (downloadsDir != null) {

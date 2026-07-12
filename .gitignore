@@ -134,3 +134,4 @@ Thumbs.db
 migrate_working_dir/
 logs/
 tmp/
+firebase_options.dart

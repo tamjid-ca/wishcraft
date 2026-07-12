@@ -29,13 +29,13 @@ class OccasionChip extends StatelessWidget {
           color: isSelected ? null : Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(100),
           border: Border.all(
-            color: isSelected ? Colors.transparent : theme.primaryColor.withOpacity(0.3),
+            color: isSelected ? Colors.transparent : theme.primaryColor.withValues(alpha: 0.3),
             width: 1.5,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: theme.primaryColor.withOpacity(0.3),
+                    color: theme.primaryColor.withValues(alpha: 0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 3),
                   )

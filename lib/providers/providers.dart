@@ -49,7 +49,7 @@ final firebaseAuthDatasourceProvider = Provider<FirebaseAuthDatasource>(
 );
 
 final geminiFunctionsDatasourceProvider = Provider<GeminiFunctionsDatasource>(
-  (ref) => GeminiFunctionsDatasource(ref.watch(firebaseFunctionsProvider)),
+  (ref) => GeminiFunctionsDatasource(),
 );
 
 // ── Repositories ─────────────────────────────────────────────────────────────

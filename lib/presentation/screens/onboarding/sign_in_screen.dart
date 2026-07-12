@@ -48,11 +48,11 @@ class SignInScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 AppStrings.signInSubtitle,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.white90,
+                  color: Color(0xE6FFFFFF),
                   fontSize: 16,
                 ),
               ),

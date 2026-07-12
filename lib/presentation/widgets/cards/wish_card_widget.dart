@@ -35,7 +35,7 @@ class WishCardWidget extends StatelessWidget {
             : null,
         boxShadow: [
           BoxShadow(
-            color: theme.primaryColor.withOpacity(0.3),
+            color: theme.primaryColor.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -49,7 +49,7 @@ class WishCardWidget extends StatelessWidget {
             Positioned.fill(
               child: CustomPaint(
                 painter: _CardPatternPainter(
-                  color: theme.secondaryColor.withOpacity(0.1),
+                  color: theme.secondaryColor.withValues(alpha: 0.1),
                 ),
               ),
             ),
@@ -64,7 +64,7 @@ class WishCardWidget extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
-                      color: theme.secondaryColor.withOpacity(0.2),
+                      color: theme.secondaryColor.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(100),
                     ),
                     child: Text(
@@ -101,7 +101,7 @@ class WishCardWidget extends StatelessWidget {
                       style: GoogleFonts.poppins(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: textColor.withOpacity(0.9),
+                        color: textColor.withValues(alpha: 0.9),
                       ),
                     ),
 
@@ -116,7 +116,7 @@ class WishCardWidget extends StatelessWidget {
                         style: GoogleFonts.poppins(
                           fontSize: 12,
                           fontStyle: FontStyle.italic,
-                          color: textColor.withOpacity(0.7),
+                          color: textColor.withValues(alpha: 0.7),
                         ),
                       ),
                     ),

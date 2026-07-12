@@ -50,7 +50,7 @@ class ColorPalettePicker extends StatelessWidget {
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: Colors.blue.withOpacity(0.4),
+                          color: Colors.blue.withValues(alpha: 0.4),
                           blurRadius: 6,
                         )
                       ]

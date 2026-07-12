@@ -45,7 +45,7 @@ class CardTemplateSelector extends StatelessWidget {
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: theme.primaryColor.withOpacity(0.4),
+                          color: theme.primaryColor.withValues(alpha: 0.4),
                           blurRadius: 8,
                         )
                       ]

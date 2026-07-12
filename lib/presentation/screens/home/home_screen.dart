@@ -56,10 +56,10 @@ class HomeScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'What occasion are we celebrating today?',
                     style: TextStyle(
-                      color: Colors.white90,
+                      color: Color(0xE6FFFFFF),
                       fontSize: 16,
                     ),
                   ),
