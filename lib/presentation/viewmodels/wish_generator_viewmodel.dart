@@ -23,8 +23,8 @@ class WishGeneratorState extends Equatable {
   bool get isFormValid => recipientName.trim().isNotEmpty;
 
   WishVariantModel? get selectedVariant =>
-      selectedIndex != null && wishVariants.value != null && selectedIndex! < wishVariants.value!.length
-          ? wishVariants.value![selectedIndex!]
+      selectedIndex != null && wishVariants.valueOrNull != null && selectedIndex! < wishVariants.valueOrNull!.length
+          ? wishVariants.valueOrNull![selectedIndex!]
           : null;
 
   WishGeneratorState copyWith({
@@ -64,7 +64,7 @@ class WishGeneratorViewModel extends StateNotifier<WishGeneratorState> {
   void selectVariant(int index) => state = state.copyWith(selectedIndex: index);
 
   void editVariantText(int index, String newText) {
-    final current = state.wishVariants.value;
+    final current = state.wishVariants.valueOrNull;
     if (current == null || index >= current.length) return;
     final updated = List<WishVariantModel>.from(current);
     updated[index] = updated[index].copyWith(text: newText);
@@ -94,7 +94,7 @@ class WishGeneratorViewModel extends StateNotifier<WishGeneratorState> {
   }
 
   Future<void> regenerateVariant(int index) async {
-    final current = state.wishVariants.value;
+    final current = state.wishVariants.valueOrNull;
     if (current == null) return;
     try {
       final fresh = await _generateWishUsecase.call(

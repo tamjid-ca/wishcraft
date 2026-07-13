@@ -57,7 +57,7 @@ class _WishGeneratorScreenState extends ConsumerState<WishGeneratorScreen> {
     );
 
     final isLoading = state.wishVariants is AsyncLoading;
-    final wishes = state.wishVariants.value ?? [];
+    final wishes = state.wishVariants.valueOrNull ?? [];
 
     return Scaffold(
       appBar: AppBar(

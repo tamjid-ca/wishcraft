@@ -1,5 +1,6 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
 import '../../../core/errors/app_exception.dart';
 
 class GeminiFunctionsDatasource {
@@ -12,19 +13,16 @@ class GeminiFunctionsDatasource {
     required String tone,
     String? personalNote,
   }) async {
-    final apiKey = dotenv.env['GEMINI_API_KEY'];
-    if (apiKey == null || apiKey.isEmpty || apiKey == 'your_gemini_api_key_here') {
+    final apiKey = dotenv.env['OPENROUTER_API_KEY'];
+    if (apiKey == null || apiKey.isEmpty || apiKey == 'your_openrouter_api_key_here') {
       throw const AppException(
-        'Gemini API key not set. Add GEMINI_API_KEY to your .env file.',
+        'OpenRouter API key not set. Add OPENROUTER_API_KEY to your .env file.',
       );
     }
 
-    try {
-      final model = GenerativeModel(
-        model: 'gemini-1.5-flash',
-        apiKey: apiKey,
-      );
+    final modelName = dotenv.env['OPENROUTER_MODEL'] ?? 'openrouter/free';
 
+    try {
       final personalNoteText = (personalNote != null && personalNote.isNotEmpty)
           ? 'Personal note: $personalNote'
           : '';
@@ -51,12 +49,33 @@ Format exactly like this:
 [Third wish text here]
 ''';
 
-      final content = [Content.text(prompt)];
-      final response = await model.generateContent(content);
-      final text = response.text;
+      final response = await http.post(
+        Uri.parse('https://openrouter.ai/api/v1/chat/completions'),
+        headers: {
+          'Authorization': 'Bearer $apiKey',
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://github.com/com-example-wishcraft/wishcraft',
+          'X-Title': 'WishCraft App',
+        },
+        body: jsonEncode({
+          'model': modelName,
+          'messages': [
+            {'role': 'user', 'content': prompt}
+          ],
+        }),
+      );
+
+      if (response.statusCode != 200) {
+        final errBody = jsonDecode(response.body);
+        final errMsg = errBody['error']?['message'] ?? 'Status code: ${response.statusCode}';
+        throw AppException('OpenRouter API Error: $errMsg');
+      }
+
+      final data = jsonDecode(response.body);
+      final text = data['choices']?[0]?['message']?['content'] as String?;
 
       if (text == null || text.isEmpty) {
-        throw const AppException('No response from Gemini. Please try again.');
+        throw const AppException('No response from OpenRouter. Please try again.');
       }
 
       // Parse the response into 3 wish variants
@@ -72,19 +91,9 @@ Format exactly like this:
       });
     } on AppException {
       rethrow;
-    } catch (e) {
-      if (e.toString().contains('API_KEY_INVALID') ||
-          e.toString().contains('invalid API key') ||
-          e.toString().contains('400')) {
-        throw const AppException(
-          'Invalid Gemini API key. Check your .env file.',
-        );
-      }
-      if (e.toString().contains('quota') || e.toString().contains('429')) {
-        throw const AppException(
-          "You've reached the generation limit. Please try again later.",
-        );
-      }
+    } catch (e, st) {
+      print('Error generating wishes via OpenRouter: $e');
+      print(st);
       throw AppException('Something went wrong generating wishes. Please try again.');
     }
   }

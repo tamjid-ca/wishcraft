@@ -24,8 +24,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
 
-    final isFirstLaunch = ref.read(isFirstLaunchProvider).value ?? true;
-    final loggedIn = ref.read(authStateChangesProvider).value != null;
+    final isFirstLaunch = await ref.read(isFirstLaunchProvider.future);
+    final loggedIn = ref.read(firebaseAuthProvider).currentUser != null;
 
     if (loggedIn) {
       context.go('/home');
