@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
-import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../data/models/occasion_model.dart';
 import '../../../data/models/wish_card_model.dart';
 import '../../../providers/providers.dart';
 import '../../widgets/cards/wish_card_widget.dart';
 import '../../widgets/cards/card_template_selector.dart';
+import '../../widgets/common/wc_app_bar.dart';
 import '../../widgets/editor/text_editor_panel.dart';
 import '../../widgets/editor/sticker_overlay_picker.dart';
 import '../../widgets/editor/layout_picker.dart';
@@ -69,8 +69,8 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppStrings.cardEditor),
+      appBar: WcAppBar(
+        title: AppStrings.cardEditor,
         actions: [
           IconButton(
             icon: const Icon(Icons.undo),
@@ -90,9 +90,12 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
               child: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: WishCardWidget(
-                    card: cardPreview,
-                    occasionDisplayName: occasion.displayName,
+                  // RepaintBoundary isolates card repaints from the editor panel
+                  child: RepaintBoundary(
+                    child: WishCardWidget(
+                      card: cardPreview,
+                      occasionDisplayName: occasion.displayName,
+                    ),
                   ),
                 ),
               ),
@@ -207,9 +210,6 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
             onPressed: () {
               context.push('/preview', extra: cardPreview);
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-            ),
             child: const Text(AppStrings.previewShare),
           ),
         ),

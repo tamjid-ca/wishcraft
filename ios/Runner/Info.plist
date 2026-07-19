@@ -77,5 +77,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>WishCraft needs access to save your wish card to Photos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>WishCraft needs access to your Photos to save wish cards.</string>
 </dict>
 </plist>

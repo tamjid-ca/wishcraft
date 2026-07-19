@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../data/models/occasion_model.dart';
 import '../../../providers/providers.dart';
 import '../../widgets/common/error_snackbar.dart';
+import '../../widgets/common/wc_app_bar.dart';
+import '../../widgets/common/wc_section_header.dart';
 import '../../widgets/wish/wish_variants_list.dart';
 
 class WishGeneratorScreen extends ConsumerStatefulWidget {
@@ -26,9 +27,7 @@ class _WishGeneratorScreenState extends ConsumerState<WishGeneratorScreen> {
     'Mom', 'Dad', 'Friend', 'Wife', 'Husband', 'Child', 'Boss', 'Custom'
   ];
 
-  final List<String> _tones = [
-    'Heartfelt', 'Funny', 'Formal', 'Poetic'
-  ];
+  final List<String> _tones = ['Heartfelt', 'Funny', 'Formal', 'Poetic'];
 
   @override
   void dispose() {
@@ -45,7 +44,10 @@ class _WishGeneratorScreenState extends ConsumerState<WishGeneratorScreen> {
     );
 
     final state = ref.watch(wishGeneratorViewModelProvider(widget.occasionId));
-    final notifier = ref.read(wishGeneratorViewModelProvider(widget.occasionId).notifier);
+    final notifier =
+        ref.read(wishGeneratorViewModelProvider(widget.occasionId).notifier);
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
 
     ref.listen<AsyncValue>(
       wishGeneratorViewModelProvider(widget.occasionId).select((s) => s.wishVariants),
@@ -60,9 +62,7 @@ class _WishGeneratorScreenState extends ConsumerState<WishGeneratorScreen> {
     final wishes = state.wishVariants.valueOrNull ?? [];
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Wishes for ${occasion.displayName}'),
-      ),
+      appBar: WcAppBar(title: 'Wishes for ${occasion.displayName}'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -75,17 +75,22 @@ class _WishGeneratorScreenState extends ConsumerState<WishGeneratorScreen> {
                 decoration: const InputDecoration(
                   labelText: AppStrings.recipientName,
                   hintText: AppStrings.recipientNameHint,
+                  prefixIcon: Icon(Icons.person_outline),
                 ),
                 onChanged: notifier.setRecipientName,
-                validator: (v) => v == null || v.trim().isEmpty ? 'Enter recipient name' : null,
+                validator: (v) =>
+                    v == null || v.trim().isEmpty ? 'Enter recipient name' : null,
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: state.relationship,
-                decoration: const InputDecoration(labelText: AppStrings.relationship),
-                items: _relationships.map((r) {
-                  return DropdownMenuItem(value: r, child: Text(r));
-                }).toList(),
+                decoration: const InputDecoration(
+                  labelText: AppStrings.relationship,
+                  prefixIcon: Icon(Icons.people_outline),
+                ),
+                items: _relationships
+                    .map((r) => DropdownMenuItem(value: r, child: Text(r)))
+                    .toList(),
                 onChanged: (v) {
                   if (v != null) notifier.setRelationship(v);
                 },
@@ -97,17 +102,20 @@ class _WishGeneratorScreenState extends ConsumerState<WishGeneratorScreen> {
                 decoration: const InputDecoration(
                   labelText: AppStrings.personalNote,
                   hintText: AppStrings.personalNoteHint,
+                  prefixIcon: Icon(Icons.notes_outlined),
+                  alignLabelWithHint: true,
                 ),
                 onChanged: notifier.setPersonalNote,
               ),
-              const SizedBox(height: 16),
-              const Text(
-                AppStrings.tone,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              const SizedBox(height: 20),
+              WcSectionHeader(
+                title: AppStrings.tone,
+                padding: EdgeInsets.zero,
               ),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
+                runSpacing: 8,
                 children: _tones.map((t) {
                   final isSelected = state.tone == t;
                   return ChoiceChip(
@@ -122,26 +130,31 @@ class _WishGeneratorScreenState extends ConsumerState<WishGeneratorScreen> {
                 Center(
                   child: Column(
                     children: [
-                      const CircularProgressIndicator(),
+                      CircularProgressIndicator(color: cs.primary),
                       const SizedBox(height: 12),
-                      Text(AppStrings.generating),
+                      Text(AppStrings.generating,
+                          style: theme.textTheme.bodyMedium),
                     ],
                   ),
                 )
               else
-                ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      notifier.generateWishes();
-                    }
-                  },
-                  child: const Text(AppStrings.generateWishes),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      if (_formKey.currentState?.validate() ?? false) {
+                        notifier.generateWishes();
+                      }
+                    },
+                    icon: const Icon(Icons.auto_awesome),
+                    label: const Text(AppStrings.generateWishes),
+                  ),
                 ),
               const SizedBox(height: 24),
               if (wishes.isNotEmpty) ...[
-                const Text(
-                  'Select a message variant:',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                WcSectionHeader(
+                  title: 'Select a message variant:',
+                  padding: EdgeInsets.zero,
                 ),
                 const SizedBox(height: 12),
                 WishVariantsList(
@@ -152,21 +165,20 @@ class _WishGeneratorScreenState extends ConsumerState<WishGeneratorScreen> {
                   onEdit: notifier.editVariantText,
                 ),
                 const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: state.selectedIndex == null
-                      ? null
-                      : () {
-                          // Pass state setup to card editor
-                          ref.read(cardEditorViewModelProvider.notifier).initFromCard(
-                                senderName: '',
-                                showBorder: false,
-                              );
-                          context.push('/card-editor', extra: widget.occasionId);
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: state.selectedIndex == null
+                        ? null
+                        : () {
+                            ref
+                                .read(cardEditorViewModelProvider.notifier)
+                                .initFromCard(senderName: '', showBorder: false);
+                            context.push('/card-editor', extra: widget.occasionId);
+                          },
+                    icon: const Icon(Icons.edit_outlined),
+                    label: const Text(AppStrings.nextCustomize),
                   ),
-                  child: const Text(AppStrings.nextCustomize),
                 ),
               ],
             ],

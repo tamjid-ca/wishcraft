@@ -5,6 +5,8 @@ import '../../../core/constants/app_strings.dart';
 import '../../../providers/providers.dart';
 import '../../viewmodels/saved_cards_viewmodel.dart';
 import '../../widgets/cards/saved_card_thumbnail.dart';
+import '../../widgets/common/wc_app_bar.dart';
+import '../../widgets/common/wc_empty_state.dart';
 
 class SavedCardsScreen extends ConsumerWidget {
   const SavedCardsScreen({super.key});
@@ -13,33 +15,29 @@ class SavedCardsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(savedCardsViewModelProvider);
     final notifier = ref.read(savedCardsViewModelProvider.notifier);
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final screenWidth = MediaQuery.sizeOf(context).width;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppStrings.savedCards),
-      ),
+      appBar: const WcAppBar(title: AppStrings.savedCards),
       body: state.cards.when(
         data: (cards) {
           final filtered = state.filteredCards;
           if (filtered.isEmpty) {
-            return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.folder_open, size: 64, color: Colors.grey),
-                  SizedBox(height: 12),
-                  Text(AppStrings.noSavedCards, style: TextStyle(fontWeight: FontWeight.bold)),
-                  SizedBox(height: 4),
-                  Text(AppStrings.noSavedCardsSubtitle, style: TextStyle(color: Colors.grey)),
-                ],
-              ),
+            return WcEmptyState(
+              icon: Icons.folder_open_outlined,
+              title: AppStrings.noSavedCards,
+              subtitle: AppStrings.noSavedCardsSubtitle,
+              actionLabel: 'Create a Card',
+              onAction: () => context.push('/occasions'),
             );
           }
 
           return GridView.builder(
             padding: const EdgeInsets.all(16),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: screenWidth > 600 ? 3 : 2,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
               childAspectRatio: 1.0,
@@ -69,15 +67,20 @@ class SavedCardsScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('Error loading cards: $err')),
+        error: (err, _) => Center(
+          child: Text('Error loading cards: $err',
+              style: theme.textTheme.bodyMedium?.copyWith(color: cs.error)),
+        ),
       ),
     );
   }
 
-  void _showDeleteDialog(BuildContext context, SavedCardsViewModel notifier, String cardId) {
+  void _showDeleteDialog(
+      BuildContext context, SavedCardsViewModel notifier, String cardId) {
     showDialog(
       context: context,
       builder: (context) {
+        final cs = Theme.of(context).colorScheme;
         return AlertDialog(
           title: const Text('Delete Saved Card?'),
           content: const Text('Are you sure you want to delete this card?'),
@@ -91,7 +94,7 @@ class SavedCardsScreen extends ConsumerWidget {
                 notifier.deleteCard(cardId);
                 Navigator.pop(context);
               },
-              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+              child: Text('Delete', style: TextStyle(color: cs.error)),
             ),
           ],
         );

@@ -8,6 +8,7 @@ import '../../../providers/providers.dart';
 import '../../viewmodels/preview_viewmodel.dart';
 import '../../widgets/cards/wish_card_widget.dart';
 import '../../widgets/common/error_snackbar.dart';
+import '../../widgets/common/wc_app_bar.dart';
 import '../../widgets/share/share_bottom_sheet.dart';
 
 class CardPreviewScreen extends ConsumerStatefulWidget {
@@ -46,9 +47,7 @@ class _CardPreviewScreenState extends ConsumerState<CardPreviewScreen> {
     final isLoading = state.isSaving || state.isExporting;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppStrings.preview),
-      ),
+      appBar: const WcAppBar(title: AppStrings.preview),
       body: Column(
         children: [
           Expanded(
@@ -122,9 +121,10 @@ class _CardPreviewScreenState extends ConsumerState<CardPreviewScreen> {
                               );
                             },
                       icon: const Icon(Icons.share, color: Colors.white),
-                      label: const Text(AppStrings.shareSheet, style: TextStyle(color: Colors.white)),
+                      label: const Text(AppStrings.shareSheet,
+                          style: TextStyle(color: Colors.white)),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                   ),

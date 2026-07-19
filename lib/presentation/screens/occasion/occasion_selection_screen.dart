@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../providers/providers.dart';
 import '../../widgets/occasion/occasion_grid.dart';
+import '../../widgets/common/wc_app_bar.dart';
 
 class OccasionSelectionScreen extends ConsumerWidget {
   const OccasionSelectionScreen({super.key});
@@ -14,9 +15,7 @@ class OccasionSelectionScreen extends ConsumerWidget {
     final notifier = ref.read(occasionViewModelProvider.notifier);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppStrings.selectOccasion),
-      ),
+      appBar: const WcAppBar(title: AppStrings.selectOccasion),
       body: Column(
         children: [
           Padding(

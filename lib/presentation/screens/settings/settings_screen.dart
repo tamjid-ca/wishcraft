@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../providers/providers.dart';
-import '../../widgets/common/error_snackbar.dart';
+import '../../widgets/common/wc_app_bar.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -12,17 +12,17 @@ class SettingsScreen extends ConsumerWidget {
     final user = ref.watch(currentUserProvider);
     final themeMode = ref.watch(themeModeProvider);
     final authViewModel = ref.watch(authViewModelProvider);
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
 
     final isLoading = authViewModel is AsyncLoading;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppStrings.settings),
-      ),
+      appBar: const WcAppBar(title: AppStrings.settings),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Account Profile
+          // ── Account Profile Card ────────────────────────────────
           if (user != null) ...[
             Card(
               child: Padding(
@@ -35,9 +35,10 @@ class SettingsScreen extends ConsumerWidget {
                         backgroundImage: NetworkImage(user.photoUrl!),
                       )
                     else
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 30,
-                        child: Icon(Icons.person, size: 30),
+                        backgroundColor: cs.primaryContainer,
+                        child: Icon(Icons.person, size: 30, color: cs.onPrimaryContainer),
                       ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -46,12 +47,16 @@ class SettingsScreen extends ConsumerWidget {
                         children: [
                           Text(
                             user.displayName ?? 'Google User',
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             user.email ?? '',
-                            style: const TextStyle(color: Colors.grey, fontSize: 14),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: cs.onSurface.withValues(alpha: 0.6),
+                            ),
                           ),
                         ],
                       ),
@@ -63,37 +68,52 @@ class SettingsScreen extends ConsumerWidget {
             const SizedBox(height: 24),
           ],
 
-          const Text(
+          // ── Account Section ─────────────────────────────────────
+          Text(
             AppStrings.account,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue),
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: cs.primary,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.logout, color: Colors.red),
-            title: const Text(AppStrings.signOut),
+            leading: Icon(Icons.logout, color: cs.error),
+            title: Text(AppStrings.signOut,
+                style: theme.textTheme.bodyLarge),
             onTap: isLoading
                 ? null
                 : () => ref.read(authViewModelProvider.notifier).signOut(),
           ),
           ListTile(
-            leading: const Icon(Icons.delete_forever, color: Colors.red),
-            title: const Text(AppStrings.deleteAccount),
+            leading: Icon(Icons.delete_forever, color: cs.error),
+            title: Text(AppStrings.deleteAccount,
+                style: theme.textTheme.bodyLarge?.copyWith(color: cs.error)),
             onTap: isLoading ? null : () => _showDeleteConfirmation(context, ref),
           ),
           const SizedBox(height: 24),
 
-          const Text(
+          // ── Preferences Section ─────────────────────────────────
+          Text(
             'App Preferences',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue),
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: cs.primary,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           const Divider(),
           SwitchListTile(
             secondary: Icon(
               themeMode == ThemeMode.dark ? Icons.dark_mode : Icons.light_mode,
-              color: themeMode == ThemeMode.dark ? Colors.amber : Colors.grey,
+              color: themeMode == ThemeMode.dark ? cs.primary : cs.onSurface.withValues(alpha: 0.5),
             ),
-            title: const Text('Dark Mode'),
-            subtitle: const Text('Toggle between Light and Dark theme'),
+            title: Text('Dark Mode', style: theme.textTheme.bodyLarge),
+            subtitle: Text(
+              'Toggle between Light and Dark theme',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: cs.onSurface.withValues(alpha: 0.55),
+              ),
+            ),
             value: themeMode == ThemeMode.dark,
             onChanged: (isDark) {
               ref.read(themeModeProvider.notifier).setThemeMode(
@@ -105,7 +125,9 @@ class SettingsScreen extends ConsumerWidget {
           Center(
             child: Text(
               '${AppStrings.appName} v1.0.0+1',
-              style: const TextStyle(color: Colors.grey, fontSize: 12),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: cs.onSurface.withValues(alpha: 0.4),
+              ),
             ),
           ),
         ],
@@ -117,6 +139,7 @@ class SettingsScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) {
+        final cs = Theme.of(context).colorScheme;
         return AlertDialog(
           title: const Text(AppStrings.deleteAccountConfirmTitle),
           content: const Text(AppStrings.deleteAccountConfirmBody),
@@ -130,7 +153,8 @@ class SettingsScreen extends ConsumerWidget {
                 ref.read(authViewModelProvider.notifier).deleteAccount();
                 Navigator.pop(context);
               },
-              child: const Text(AppStrings.confirmDelete, style: TextStyle(color: Colors.red)),
+              child: Text(AppStrings.confirmDelete,
+                  style: TextStyle(color: cs.error)),
             ),
           ],
         );
