@@ -58,6 +58,8 @@ class SavedCardsScreen extends ConsumerWidget {
                         stickerIds: card.stickerIds,
                         showBorder: card.showBorder,
                         senderName: card.senderName,
+                        cardLayout: card.cardLayout,
+                        thumbnailBase64: card.thumbnailBase64,
                       );
                   context.push('/card-editor', extra: card);
                 },

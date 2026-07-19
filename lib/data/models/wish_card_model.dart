@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../domain/entities/card_layout.dart';
 
 class WishCardModel {
   final String id;
@@ -13,6 +14,8 @@ class WishCardModel {
   final List<String> stickerIds;
   final bool showBorder;
   final String? thumbnailUrl;
+  final CardLayout cardLayout;
+  final String? thumbnailBase64;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -29,6 +32,8 @@ class WishCardModel {
     required this.stickerIds,
     required this.showBorder,
     this.thumbnailUrl,
+    required this.cardLayout,
+    this.thumbnailBase64,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -53,6 +58,11 @@ class WishCardModel {
       stickerIds: List<String>.from(json['stickerIds'] as List? ?? []),
       showBorder: json['showBorder'] as bool? ?? false,
       thumbnailUrl: json['thumbnailUrl'] as String?,
+      cardLayout: CardLayout.values.firstWhere(
+        (e) => e.name == json['cardLayout'],
+        orElse: () => CardLayout.classic,
+      ),
+      thumbnailBase64: json['thumbnailBase64'] as String?,
       createdAt: parseDate(json['createdAt']),
       updatedAt: parseDate(json['updatedAt']),
     );
@@ -71,6 +81,8 @@ class WishCardModel {
       'stickerIds': stickerIds,
       'showBorder': showBorder,
       'thumbnailUrl': thumbnailUrl,
+      'cardLayout': cardLayout.name,
+      'thumbnailBase64': thumbnailBase64,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
     };
@@ -89,6 +101,8 @@ class WishCardModel {
     List<String>? stickerIds,
     bool? showBorder,
     String? thumbnailUrl,
+    CardLayout? cardLayout,
+    String? thumbnailBase64,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -105,6 +119,8 @@ class WishCardModel {
       stickerIds: stickerIds ?? this.stickerIds,
       showBorder: showBorder ?? this.showBorder,
       thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
+      cardLayout: cardLayout ?? this.cardLayout,
+      thumbnailBase64: thumbnailBase64 ?? this.thumbnailBase64,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

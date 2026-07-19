@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -155,4 +156,49 @@ final savedCardsViewModelProvider =
 
 final currentUserProvider = Provider<AppUser?>((ref) {
   return ref.watch(authStateChangesProvider).value;
+});
+
+class ThemeModeNotifier extends StateNotifier<ThemeMode> {
+  ThemeModeNotifier() : super(ThemeMode.system) {
+    _loadThemeMode();
+  }
+
+  Future<void> _loadThemeMode() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final modeString = prefs.getString('theme_mode') ?? 'system';
+      switch (modeString) {
+        case 'light':
+          state = ThemeMode.light;
+          break;
+        case 'dark':
+          state = ThemeMode.dark;
+          break;
+        case 'system':
+        default:
+          state = ThemeMode.system;
+          break;
+      }
+    } catch (_) {
+      state = ThemeMode.system;
+    }
+  }
+
+  Future<void> setThemeMode(ThemeMode mode) async {
+    state = mode;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String modeString = 'system';
+      if (mode == ThemeMode.light) {
+        modeString = 'light';
+      } else if (mode == ThemeMode.dark) {
+        modeString = 'dark';
+      }
+      await prefs.setString('theme_mode', modeString);
+    } catch (_) {}
+  }
+}
+
+final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
+  return ThemeModeNotifier();
 });

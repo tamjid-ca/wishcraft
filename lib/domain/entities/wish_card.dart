@@ -1,3 +1,5 @@
+import 'card_layout.dart';
+
 class WishCard {
   final String id;
   final String occasionId;
@@ -11,6 +13,8 @@ class WishCard {
   final List<String> stickerIds;
   final bool showBorder;
   final String? thumbnailUrl;
+  final CardLayout cardLayout;
+  final String? thumbnailBase64;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -27,6 +31,8 @@ class WishCard {
     required this.stickerIds,
     required this.showBorder,
     this.thumbnailUrl,
+    required this.cardLayout,
+    this.thumbnailBase64,
     required this.createdAt,
     required this.updatedAt,
   });

@@ -11,6 +11,7 @@ import '../../widgets/cards/wish_card_widget.dart';
 import '../../widgets/cards/card_template_selector.dart';
 import '../../widgets/editor/text_editor_panel.dart';
 import '../../widgets/editor/sticker_overlay_picker.dart';
+import '../../widgets/editor/layout_picker.dart';
 
 class CardEditorScreen extends ConsumerStatefulWidget {
   const CardEditorScreen({super.key});
@@ -61,6 +62,8 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
       textColor: state.textColor,
       stickerIds: state.appliedStickerIds,
       showBorder: state.showBorder,
+      cardLayout: state.cardLayout,
+      thumbnailBase64: state.thumbnailBase64,
       createdAt: editingCard?.createdAt ?? DateTime.now(),
       updatedAt: DateTime.now(),
     );
@@ -160,6 +163,11 @@ class _CardEditorScreenState extends ConsumerState<CardEditorScreen> {
                             padding: const EdgeInsets.all(16.0),
                             child: ListView(
                               children: [
+                                LayoutPicker(
+                                  selectedLayout: state.cardLayout,
+                                  onSelect: notifier.setLayout,
+                                ),
+                                const SizedBox(height: 12),
                                 TextField(
                                   controller: _senderController,
                                   decoration: const InputDecoration(

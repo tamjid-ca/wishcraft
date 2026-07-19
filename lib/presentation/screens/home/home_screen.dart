@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -14,6 +15,11 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
     final savedCardsAsync = ref.watch(savedCardsViewModelProvider).cards;
+
+    // Responsive sizing
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final horizontalPadding = screenWidth > 600 ? 24.0 : 16.0;
 
     return Scaffold(
       appBar: AppBar(
@@ -35,51 +41,109 @@ class HomeScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Hero section / welcome banner
-            Container(
-              width: double.infinity,
-              margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                gradient: AppColors.primaryGradient,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Hello, ${user?.displayName ?? "Friend"}! 👋',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
+            // Hero section with glassmorphism welcome card
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 16),
+              child: SizedBox(
+                height: 190,
+                child: Stack(
+                  children: [
+                    // Background deep-violet/pink gradient
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        gradient: AppColors.primaryGradient,
+                        borderRadius: BorderRadius.circular(24),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'What occasion are we celebrating today?',
-                    style: TextStyle(
-                      color: Color(0xE6FFFFFF),
-                      fontSize: 16,
+                    // Decorative glow circles
+                    Positioned(
+                      left: -20,
+                      top: -20,
+                      child: Container(
+                        width: 90,
+                        height: 90,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.12),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => context.push('/occasions'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: AppColors.primary,
+                    Positioned(
+                      right: -30,
+                      bottom: -30,
+                      child: Container(
+                        width: 140,
+                        height: 140,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.08),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
                     ),
-                    child: const Text('Create New Card'),
-                  ),
-                ],
+                    // Glassmorphic layer
+                    Positioned.fill(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: BackdropFilter(
+                          filter: ui.ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.25),
+                                width: 1.5,
+                              ),
+                            ),
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Hello, ${user?.displayName ?? "Friend"}! 👋',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  'What occasion are we celebrating today?',
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.9),
+                                    fontSize: 15,
+                                  ),
+                                ),
+                                const SizedBox(height: 14),
+                                ElevatedButton(
+                                  onPressed: () => context.push('/occasions'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white.withOpacity(0.9),
+                                    foregroundColor: AppColors.primary,
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                    minimumSize: Size.zero,
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                  child: const Text('Create New Card', style: TextStyle(fontSize: 13)),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
 
-            // Quick Occasions Horizontal Scroll
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: Text(
+            // Quick Occasions Horizontal Scroll (Occasion chips)
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 8.0),
+              child: const Text(
                 'Browse Categories',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
@@ -88,7 +152,7 @@ class HomeScreen extends ConsumerWidget {
               height: 50,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                 itemCount: occasions.length,
                 separatorBuilder: (_, __) => const SizedBox(width: 8),
                 itemBuilder: (context, idx) {
@@ -102,59 +166,76 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
-            // Recent Saved Cards section
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: Text(
+            // Recent Saved Cards grid section
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 8.0),
+              child: const Text(
                 AppStrings.recentCards,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-            SizedBox(
-              height: 200,
-              child: savedCardsAsync.when(
-                data: (cards) {
-                  if (cards.isEmpty) {
-                    return const Center(
-                      child: Text(AppStrings.noRecentCards),
-                    );
-                  }
-                  return ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: cards.length > 5 ? 5 : cards.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 12),
-                    itemBuilder: (context, idx) {
-                      final card = cards[idx];
-                      return SizedBox(
-                        width: 140,
-                        child: SavedCardThumbnail(
-                          card: card,
-                          onTap: () {
-                            // Editor view loaded with state
-                            ref.read(cardEditorViewModelProvider.notifier).initFromCard(
-                                  templateId: card.templateId,
-                                  fontFamily: card.fontFamily,
-                                  fontSize: card.fontSize,
-                                  textColor: card.textColor,
-                                  stickerIds: card.stickerIds,
-                                  showBorder: card.showBorder,
-                                  senderName: card.senderName,
-                                );
-                            context.push('/card-editor', extra: card);
-                          },
-                        ),
-                      );
-                    },
+            
+            savedCardsAsync.when(
+              data: (cards) {
+                if (cards.isEmpty) {
+                  return Padding(
+                    padding: EdgeInsets.all(horizontalPadding),
+                    child: const Center(
+                      child: Text(AppStrings.noRecentCards, style: TextStyle(color: Colors.grey)),
+                    ),
                   );
-                },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, _) => Center(child: Text('Error: $err')),
+                }
+                
+                final maxCount = cards.length > 4 ? 4 : cards.length;
+                return GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: screenWidth > 600 ? 3 : 2,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 1.0,
+                  ),
+                  itemCount: maxCount,
+                  itemBuilder: (context, idx) {
+                    final card = cards[idx];
+                    return SavedCardThumbnail(
+                      card: card,
+                      onTap: () {
+                        // Editor view loaded with state
+                        ref.read(cardEditorViewModelProvider.notifier).initFromCard(
+                              templateId: card.templateId,
+                              fontFamily: card.fontFamily,
+                              fontSize: card.fontSize,
+                              textColor: card.textColor,
+                              stickerIds: card.stickerIds,
+                              showBorder: card.showBorder,
+                              senderName: card.senderName,
+                              cardLayout: card.cardLayout,
+                              thumbnailBase64: card.thumbnailBase64,
+                            );
+                        context.push('/card-editor', extra: card);
+                      },
+                    );
+                  },
+                );
+              },
+              loading: () => const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(24.0),
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+              error: (err, _) => Padding(
+                padding: EdgeInsets.all(horizontalPadding),
+                child: Center(child: Text('Error: $err')),
               ),
             ),
-            const SizedBox(height: 24),
+            
+            const SizedBox(height: 100), // padding at bottom for FAB
           ],
         ),
       ),

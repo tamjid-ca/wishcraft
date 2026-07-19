@@ -10,6 +10,7 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
+    final themeMode = ref.watch(themeModeProvider);
     final authViewModel = ref.watch(authViewModelProvider);
 
     final isLoading = authViewModel is AsyncLoading;
@@ -86,14 +87,18 @@ class SettingsScreen extends ConsumerWidget {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue),
           ),
           const Divider(),
-          ListTile(
-            leading: const Icon(Icons.palette),
-            title: const Text('Theme Settings'),
-            subtitle: const Text('Light / Dark Mode'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () {
-              // Stub or show bottom sheet theme picker
-              ErrorSnackbar.show(context, 'Theme configurations toggled by OS preferences.');
+          SwitchListTile(
+            secondary: Icon(
+              themeMode == ThemeMode.dark ? Icons.dark_mode : Icons.light_mode,
+              color: themeMode == ThemeMode.dark ? Colors.amber : Colors.grey,
+            ),
+            title: const Text('Dark Mode'),
+            subtitle: const Text('Toggle between Light and Dark theme'),
+            value: themeMode == ThemeMode.dark,
+            onChanged: (isDark) {
+              ref.read(themeModeProvider.notifier).setThemeMode(
+                    isDark ? ThemeMode.dark : ThemeMode.light,
+                  );
             },
           ),
           const SizedBox(height: 40),

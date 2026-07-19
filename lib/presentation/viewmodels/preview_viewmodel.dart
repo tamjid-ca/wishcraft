@@ -6,11 +6,13 @@ import '../../data/models/wish_card_model.dart';
 import '../../data/services/export_service.dart';
 import '../../data/services/share_service.dart';
 import '../../domain/usecases/save_card_usecase.dart';
+import 'package:share_plus/share_plus.dart';
 
 class PreviewState extends Equatable {
   final bool isExporting;
   final bool isSaving;
   final bool isSaved;
+  final bool isGallerySaved;
   final String? exportedFilePath;
   final String? errorMessage;
 
@@ -18,6 +20,7 @@ class PreviewState extends Equatable {
     this.isExporting = false,
     this.isSaving = false,
     this.isSaved = false,
+    this.isGallerySaved = false,
     this.exportedFilePath,
     this.errorMessage,
   });
@@ -26,6 +29,7 @@ class PreviewState extends Equatable {
     bool? isExporting,
     bool? isSaving,
     bool? isSaved,
+    bool? isGallerySaved,
     String? exportedFilePath,
     String? errorMessage,
   }) {
@@ -33,6 +37,7 @@ class PreviewState extends Equatable {
       isExporting: isExporting ?? this.isExporting,
       isSaving: isSaving ?? this.isSaving,
       isSaved: isSaved ?? this.isSaved,
+      isGallerySaved: isGallerySaved ?? this.isGallerySaved,
       exportedFilePath: exportedFilePath ?? this.exportedFilePath,
       errorMessage: errorMessage,
     );
@@ -40,7 +45,7 @@ class PreviewState extends Equatable {
 
   @override
   List<Object?> get props =>
-      [isExporting, isSaving, isSaved, exportedFilePath, errorMessage];
+      [isExporting, isSaving, isSaved, isGallerySaved, exportedFilePath, errorMessage];
 }
 
 class PreviewViewModel extends StateNotifier<PreviewState> {
@@ -55,8 +60,9 @@ class PreviewViewModel extends StateNotifier<PreviewState> {
     if (state.isSaving) return;
     state = state.copyWith(isSaving: true, errorMessage: null);
     try {
-      final thumbFile = await _exportService.exportThumbnail(repaintKey, card.id);
-      await _saveCardUsecase.call(card, thumbnailFile: thumbFile);
+      final base64String = await _exportService.exportThumbnailBase64(repaintKey);
+      final updatedCard = card.copyWith(thumbnailBase64: base64String);
+      await _saveCardUsecase.call(updatedCard);
       state = state.copyWith(isSaving: false, isSaved: true);
     } catch (e) {
       state = state.copyWith(isSaving: false, errorMessage: e.toString());
@@ -67,7 +73,12 @@ class PreviewViewModel extends StateNotifier<PreviewState> {
     state = state.copyWith(isExporting: true, errorMessage: null);
     try {
       final file = await _exportService.exportAsPng(repaintKey, name);
-      state = state.copyWith(isExporting: false, exportedFilePath: file.path);
+      final success = await _exportService.saveToGallery(file);
+      if (success) {
+        state = state.copyWith(isExporting: false, exportedFilePath: file.path, isGallerySaved: true);
+      } else {
+        throw const FormatException('Failed to save to gallery');
+      }
       return file;
     } catch (e) {
       state = state.copyWith(isExporting: false, errorMessage: e.toString());
@@ -79,6 +90,7 @@ class PreviewViewModel extends StateNotifier<PreviewState> {
     state = state.copyWith(isExporting: true, errorMessage: null);
     try {
       final file = await _exportService.exportAsPdf(repaintKey, name);
+      await Share.shareXFiles([XFile(file.path)]);
       state = state.copyWith(isExporting: false, exportedFilePath: file.path);
       return file;
     } catch (e) {
@@ -102,12 +114,17 @@ class PreviewViewModel extends StateNotifier<PreviewState> {
     state = state.copyWith(isExporting: true, errorMessage: null);
     try {
       final file = await _exportService.exportAsPng(repaintKey, 'wishcraft_${DateTime.now().millisecondsSinceEpoch}');
-      await _exportService.saveToGallery(file);
-      state = state.copyWith(isExporting: false);
+      final success = await _exportService.saveToGallery(file);
+      if (success) {
+        state = state.copyWith(isExporting: false, isGallerySaved: true);
+      } else {
+        throw const FormatException('Failed to save to gallery');
+      }
     } catch (e) {
       state = state.copyWith(isExporting: false, errorMessage: e.toString());
     }
   }
 
   void clearError() => state = state.copyWith(errorMessage: null);
+  void clearGallerySaved() => state = state.copyWith(isGallerySaved: false);
 }

@@ -37,6 +37,9 @@ class _CardPreviewScreenState extends ConsumerState<CardPreviewScreen> {
         notifier.clearError();
       } else if (current.isSaved) {
         ErrorSnackbar.showSuccess(context, AppStrings.cardSaved);
+      } else if (current.isGallerySaved) {
+        ErrorSnackbar.showSuccess(context, "Saved to Gallery");
+        notifier.clearGallerySaved();
       }
     });
 

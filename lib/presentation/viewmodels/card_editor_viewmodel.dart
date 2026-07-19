@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:equatable/equatable.dart';
+import '../../domain/entities/card_layout.dart';
 
 class CardEditorState extends Equatable {
   final String selectedTemplateId;
@@ -11,6 +12,8 @@ class CardEditorState extends Equatable {
   final bool showBorder;
   final String senderName;
   final bool showRecipientName;
+  final CardLayout cardLayout;
+  final String? thumbnailBase64;
 
   const CardEditorState({
     this.selectedTemplateId = 'template_01',
@@ -21,6 +24,8 @@ class CardEditorState extends Equatable {
     this.showBorder = false,
     this.senderName = '',
     this.showRecipientName = true,
+    this.cardLayout = CardLayout.classic,
+    this.thumbnailBase64,
   });
 
   Color get textColorValue => Color(textColor);
@@ -34,6 +39,8 @@ class CardEditorState extends Equatable {
     bool? showBorder,
     String? senderName,
     bool? showRecipientName,
+    CardLayout? cardLayout,
+    String? thumbnailBase64,
   }) {
     return CardEditorState(
       selectedTemplateId: selectedTemplateId ?? this.selectedTemplateId,
@@ -44,6 +51,8 @@ class CardEditorState extends Equatable {
       showBorder: showBorder ?? this.showBorder,
       senderName: senderName ?? this.senderName,
       showRecipientName: showRecipientName ?? this.showRecipientName,
+      cardLayout: cardLayout ?? this.cardLayout,
+      thumbnailBase64: thumbnailBase64 ?? this.thumbnailBase64,
     );
   }
 
@@ -57,6 +66,8 @@ class CardEditorState extends Equatable {
         showBorder,
         senderName,
         showRecipientName,
+        cardLayout,
+        thumbnailBase64,
       ];
 }
 
@@ -107,6 +118,8 @@ class CardEditorViewModel extends StateNotifier<CardEditorState> {
   void toggleBorder() => _updateState(state.copyWith(showBorder: !state.showBorder));
   void toggleRecipientName() =>
       _updateState(state.copyWith(showRecipientName: !state.showRecipientName));
+  void setLayout(CardLayout layout) => _updateState(state.copyWith(cardLayout: layout));
+  void setThumbnailBase64(String? base64) => _updateState(state.copyWith(thumbnailBase64: base64));
 
   void addSticker(String stickerId) {
     final updated = [...state.appliedStickerIds, stickerId];
@@ -126,6 +139,8 @@ class CardEditorViewModel extends StateNotifier<CardEditorState> {
     List<String>? stickerIds,
     bool? showBorder,
     String? senderName,
+    CardLayout? cardLayout,
+    String? thumbnailBase64,
   }) {
     final newState = CardEditorState(
       selectedTemplateId: templateId ?? state.selectedTemplateId,
@@ -135,6 +150,8 @@ class CardEditorViewModel extends StateNotifier<CardEditorState> {
       appliedStickerIds: stickerIds ?? state.appliedStickerIds,
       showBorder: showBorder ?? state.showBorder,
       senderName: senderName ?? state.senderName,
+      cardLayout: cardLayout ?? state.cardLayout,
+      thumbnailBase64: thumbnailBase64 ?? state.thumbnailBase64,
     );
     _pushHistory(newState);
     state = newState;

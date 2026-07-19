@@ -7,7 +7,6 @@ class OccasionModel {
   final Color primaryColor;
   final Color secondaryColor;
   final String templateFolder;
-  final List<String> templateIds;
 
   const OccasionModel({
     required this.id,
@@ -16,8 +15,9 @@ class OccasionModel {
     required this.primaryColor,
     required this.secondaryColor,
     required this.templateFolder,
-    required this.templateIds,
   });
+
+  List<String> get templateIds => List.generate(12, (index) => 'template_${(index + 1).toString().padLeft(2, '0')}');
 }
 
 const List<OccasionModel> occasions = [
@@ -28,7 +28,6 @@ const List<OccasionModel> occasions = [
     primaryColor: Color(0xFF1A3C5E),
     secondaryColor: Color(0xFFD4A853),
     templateFolder: 'assets/images/templates/fathers_day/',
-    templateIds: ['fd_01', 'fd_02', 'fd_03'],
   ),
   OccasionModel(
     id: 'mothers_day',
@@ -37,7 +36,6 @@ const List<OccasionModel> occasions = [
     primaryColor: Color(0xFFE91E8C),
     secondaryColor: Color(0xFFFFF0F5),
     templateFolder: 'assets/images/templates/mothers_day/',
-    templateIds: ['md_01', 'md_02', 'md_03'],
   ),
   OccasionModel(
     id: 'birthday',
@@ -46,7 +44,6 @@ const List<OccasionModel> occasions = [
     primaryColor: Color(0xFF7B2FBE),
     secondaryColor: Color(0xFFFFD700),
     templateFolder: 'assets/images/templates/birthday/',
-    templateIds: ['bd_01', 'bd_02', 'bd_03'],
   ),
   OccasionModel(
     id: 'anniversary',
@@ -55,7 +52,6 @@ const List<OccasionModel> occasions = [
     primaryColor: Color(0xFFB71C1C),
     secondaryColor: Color(0xFFFFD700),
     templateFolder: 'assets/images/templates/general/',
-    templateIds: ['gen_01', 'gen_02'],
   ),
   OccasionModel(
     id: 'eid',
@@ -64,7 +60,6 @@ const List<OccasionModel> occasions = [
     primaryColor: Color(0xFF00695C),
     secondaryColor: Color(0xFFFFD700),
     templateFolder: 'assets/images/templates/eid/',
-    templateIds: ['eid_01', 'eid_02', 'eid_03'],
   ),
   OccasionModel(
     id: 'christmas',
@@ -73,7 +68,6 @@ const List<OccasionModel> occasions = [
     primaryColor: Color(0xFF1B5E20),
     secondaryColor: Color(0xFFC62828),
     templateFolder: 'assets/images/templates/christmas/',
-    templateIds: ['xmas_01', 'xmas_02', 'xmas_03'],
   ),
   OccasionModel(
     id: 'new_year',
@@ -82,7 +76,6 @@ const List<OccasionModel> occasions = [
     primaryColor: Color(0xFF1A237E),
     secondaryColor: Color(0xFFFFD700),
     templateFolder: 'assets/images/templates/general/',
-    templateIds: ['gen_01', 'gen_02'],
   ),
   OccasionModel(
     id: 'diwali',
@@ -91,7 +84,6 @@ const List<OccasionModel> occasions = [
     primaryColor: Color(0xFFE65100),
     secondaryColor: Color(0xFFFFD700),
     templateFolder: 'assets/images/templates/general/',
-    templateIds: ['gen_01', 'gen_02'],
   ),
   OccasionModel(
     id: 'graduation',
@@ -100,7 +92,6 @@ const List<OccasionModel> occasions = [
     primaryColor: Color(0xFF004D40),
     secondaryColor: Color(0xFFFFD700),
     templateFolder: 'assets/images/templates/general/',
-    templateIds: ['gen_01', 'gen_02'],
   ),
   OccasionModel(
     id: 'valentine',
@@ -109,7 +100,6 @@ const List<OccasionModel> occasions = [
     primaryColor: Color(0xFFAD1457),
     secondaryColor: Color(0xFFF8BBD0),
     templateFolder: 'assets/images/templates/general/',
-    templateIds: ['gen_01', 'gen_02'],
   ),
   OccasionModel(
     id: 'friendship',
@@ -118,7 +108,6 @@ const List<OccasionModel> occasions = [
     primaryColor: Color(0xFF0277BD),
     secondaryColor: Color(0xFFFFF9C4),
     templateFolder: 'assets/images/templates/general/',
-    templateIds: ['gen_01', 'gen_02'],
   ),
   OccasionModel(
     id: 'get_well',
@@ -127,7 +116,6 @@ const List<OccasionModel> occasions = [
     primaryColor: Color(0xFF2E7D32),
     secondaryColor: Color(0xFFF1F8E9),
     templateFolder: 'assets/images/templates/general/',
-    templateIds: ['gen_01', 'gen_02'],
   ),
   OccasionModel(
     id: 'thank_you',
@@ -136,7 +124,6 @@ const List<OccasionModel> occasions = [
     primaryColor: Color(0xFF4527A0),
     secondaryColor: Color(0xFFEDE7F6),
     templateFolder: 'assets/images/templates/general/',
-    templateIds: ['gen_01', 'gen_02'],
   ),
   OccasionModel(
     id: 'congratulations',
@@ -145,7 +132,6 @@ const List<OccasionModel> occasions = [
     primaryColor: Color(0xFF827717),
     secondaryColor: Color(0xFFFFFDE7),
     templateFolder: 'assets/images/templates/general/',
-    templateIds: ['gen_01', 'gen_02'],
   ),
   OccasionModel(
     id: 'custom',
@@ -154,6 +140,5 @@ const List<OccasionModel> occasions = [
     primaryColor: Color(0xFF6B3FA0),
     secondaryColor: Color(0xFFFF6B9D),
     templateFolder: 'assets/images/templates/general/',
-    templateIds: ['gen_01', 'gen_02'],
   ),
 ];

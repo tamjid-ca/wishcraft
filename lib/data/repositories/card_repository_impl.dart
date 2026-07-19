@@ -32,19 +32,8 @@ class CardRepositoryImpl implements CardRepository {
 
   @override
   Future<void> saveCard(WishCardModel card, {File? thumbnailFile}) async {
-    String? thumbnailUrl = card.thumbnailUrl;
-
-    if (thumbnailFile != null) {
-      final ref = _storage.ref('users/$_uid/thumbnails/${card.id}.png');
-      await ref.putFile(
-        thumbnailFile,
-        SettableMetadata(contentType: 'image/png'),
-      );
-      thumbnailUrl = await ref.getDownloadURL();
-    }
-
     await _cardsRef.doc(card.id).set(
-          card.copyWith(thumbnailUrl: thumbnailUrl).toJson()
+          card.toJson()
             ..['updatedAt'] = FieldValue.serverTimestamp()
             ..putIfAbsent('createdAt', () => FieldValue.serverTimestamp()),
           SetOptions(merge: true),
@@ -54,10 +43,5 @@ class CardRepositoryImpl implements CardRepository {
   @override
   Future<void> deleteCard(String cardId) async {
     await _cardsRef.doc(cardId).delete();
-    try {
-      await _storage.ref('users/$_uid/thumbnails/$cardId.png').delete();
-    } catch (_) {
-      // Thumbnail may not exist — safe to ignore.
-    }
   }
 }

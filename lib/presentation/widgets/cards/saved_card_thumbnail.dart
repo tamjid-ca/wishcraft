@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
+import 'dart:convert';
 import '../../../core/theme/occasion_themes.dart';
 import '../../../data/models/wish_card_model.dart';
 
@@ -20,23 +21,39 @@ class SavedCardThumbnail extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = getOccasionTheme(card.occasionId);
 
+    Widget imageWidget;
+    if (card.thumbnailBase64 != null) {
+      try {
+        final decodedBytes = base64Decode(card.thumbnailBase64!);
+        imageWidget = Image.memory(
+          decodedBytes,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => _Placeholder(theme: theme, card: card),
+        );
+      } catch (_) {
+        imageWidget = _Placeholder(theme: theme, card: card);
+      }
+    } else if (card.thumbnailUrl != null) {
+      imageWidget = CachedNetworkImage(
+        imageUrl: card.thumbnailUrl!,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(color: Colors.grey[300]),
+        ),
+        errorWidget: (context, url, error) => _Placeholder(theme: theme, card: card),
+      );
+    } else {
+      imageWidget = _Placeholder(theme: theme, card: card);
+    }
+
     return GestureDetector(
       onTap: onTap,
       onLongPress: onLongPress,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
-        child: card.thumbnailUrl != null
-            ? CachedNetworkImage(
-                imageUrl: card.thumbnailUrl!,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(color: Colors.grey[300]),
-                ),
-                errorWidget: (context, url, error) => _Placeholder(theme: theme, card: card),
-              )
-            : _Placeholder(theme: theme, card: card),
+        child: imageWidget,
       ),
     );
   }
